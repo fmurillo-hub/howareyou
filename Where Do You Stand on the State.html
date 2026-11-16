@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Where Do You Stand on the State</title>
+<style>
+/* Layout idea: one centred column, one question per screen, result as a spectrum plus four job bars. */
+:root{
+  --bg:#EEF3F8; --card:#FFFFFF; --ink:#1B2430; --muted:#5B6B7F; --navy:#0B2545; --teal:#13A89E; --gold:#E0A526; --line:#D5DEE8;
+  --head:Cambria,Georgia,"Times New Roman",serif; --body:Calibri,"Segoe UI",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0E1622;--card:#16202E;--ink:#E8EEF5;--muted:#9AA9BB;--navy:#8FD3CC;--teal:#2FC4B8;--gold:#E8B84A;--line:#2A3849;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0E1622;--card:#16202E;--ink:#E8EEF5;--muted:#9AA9BB;--navy:#8FD3CC;--teal:#2FC4B8;--gold:#E8B84A;--line:#2A3849;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:18px/1.5 var(--body)}
+main{max-width:720px;margin:0 auto;padding:24px 16px 48px}
+h1,h2,h3{font-family:var(--head);color:var(--navy);text-wrap:balance;line-height:1.2;margin:0}
+h1{font-size:2.1rem} h2{font-size:1.45rem} h3{font-size:1.15rem}
+p{margin:0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:24px}
+.stack{display:flex;flex-direction:column;gap:16px}
+.muted{color:var(--muted)}
+.eyebrow{font-size:.85rem;letter-spacing:.08em;text-transform:uppercase;color:var(--teal);font-weight:700}
+label.name{display:flex;flex-direction:column;gap:6px;font-size:.95rem}
+input[type=text]{font:inherit;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)}
+button{font:inherit;font-weight:700;border-radius:8px;padding:12px 20px;border:2px solid var(--navy);cursor:pointer}
+.primary{background:var(--navy);color:var(--card)}
+.ghost{background:transparent;color:var(--navy)}
+button:disabled{opacity:.4;cursor:not-allowed}
+button:focus-visible,input:focus-visible,.opt:focus-within{outline:3px solid var(--gold);outline-offset:2px}
+.bar{height:8px;background:var(--line);border-radius:4px;overflow:hidden}
+.bar>i{display:block;height:100%;background:var(--teal);transition:width .3s}
+.top{display:flex;justify-content:space-between;align-items:center;font-size:.9rem;color:var(--muted);gap:12px}
+.tag{font-size:.8rem;font-weight:700;color:var(--navy);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:2px 10px;white-space:nowrap}
+.opts{display:flex;flex-direction:column;gap:10px;border:0;padding:0;margin:0}
+.opt{display:flex;gap:12px;align-items:flex-start;padding:14px;border:2px solid var(--line);border-radius:10px;cursor:pointer;background:var(--card)}
+.opt:hover{border-color:var(--teal)}
+.opt input{margin-top:5px;accent-color:var(--teal);width:18px;height:18px;flex:none}
+.opt.sel{border-color:var(--teal);background:var(--bg)}
+.nav{display:flex;justify-content:space-between;gap:12px}
+.spectrum{position:relative;height:14px;border-radius:7px;background:linear-gradient(90deg,var(--gold),var(--teal),var(--navy));margin:34px 0 8px}
+.pin{position:absolute;top:-30px;transform:translateX(-50%);background:var(--navy);color:var(--card);font-weight:700;font-size:.85rem;padding:2px 8px;border-radius:6px;white-space:nowrap}
+.pin:after{content:"";position:absolute;left:50%;bottom:-5px;margin-left:-5px;border:5px solid transparent;border-bottom:0;border-top-color:var(--navy)}
+.ends{display:flex;justify-content:space-between;font-size:.85rem;color:var(--muted)}
+.dim{display:grid;grid-template-columns:112px 1fr 44px;gap:10px;align-items:center;font-size:.95rem}
+.dim .bar{height:12px}
+.dim .bar>i{background:var(--navy)}
+.big{font-family:var(--head);font-size:2.4rem;color:var(--navy);line-height:1}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.box{border:1px solid var(--line);border-radius:10px;padding:14px;background:var(--bg)}
+.box h3{font-size:1rem;margin-bottom:4px}
+.note{font-size:.9rem;color:var(--muted)}
+@media(max-width:560px){.two{grid-template-columns:1fr}.dim{grid-template-columns:96px 1fr 40px}h1{font-size:1.7rem}}
+@media(prefers-reduced-motion:reduce){.bar>i{transition:none}}
+details summary{cursor:pointer;color:var(--navy)}
+details summary:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.lrow{display:grid;grid-template-columns:150px 1fr 44px;gap:10px;align-items:center;font-size:.95rem}
+.lrow .bar{height:12px}
+.lrow .bar>i{background:var(--teal)}
+.lrow.top1 .bar>i{background:var(--navy)}
+@media(max-width:560px){.lrow{grid-template-columns:104px 1fr 40px}}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<main>
+  <section id="intro" class="card stack">
+    <p class="eyebrow">Macroeconomics · State participation</p>
+    <h1>Where do you stand on the role of the State?</h1>
+    <p>Ten situations, one answer each. Pick the response closest to what you really think, not the one you expect to hear in class. There are no right answers and nothing is graded.</p>
+    <p class="muted">About 5 minutes. Your answers stay on this page and are not sent anywhere.</p>
+    <label class="name" for="who">Your name (optional, shown on your result)
+      <input id="who" type="text" maxlength="40" autocomplete="off">
+    </label>
+    <div><button class="primary" id="start">Start the test</button></div>
+  </section>
+
+  <section id="quiz" class="stack" hidden>
+    <div class="top"><span id="count">Question 1 of 10</span><span class="tag" id="dimtag"></span></div>
+    <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="10" id="prog"><i id="progfill"></i></div>
+    <form class="card stack" id="qform" onsubmit="return false">
+      <fieldset class="opts" id="fs">
+        <legend><h2 id="qtext"></h2></legend>
+      </fieldset>
+    </form>
+    <div class="nav">
+      <button class="ghost" id="back">Back</button>
+      <button class="primary" id="next" disabled>Next</button>
+    </div>
+  </section>
+
+  <section id="result" class="stack" hidden>
+    <div class="card stack">
+      <p class="eyebrow" id="rwho">Your result</p>
+      <div style="display:flex;align-items:baseline;gap:14px;flex-wrap:wrap">
+        <h1 id="rtitle"></h1>
+      </div>
+      <p id="rsum"></p>
+      <div>
+        <div class="spectrum" id="spec"><span class="pin" id="pin"></span></div>
+        <div class="ends"><span>Market first</span><span>Mixed economy</span><span>State first</span></div>
+      </div>
+      <p class="note" id="rscore"></p>
+    </div>
+
+    <div class="card stack">
+      <h2>Your position on the State's four jobs</h2>
+      <p class="note">Longer bar means you favour a bigger State role in that job. Questions per job: allocation 3, regulation 3, redistribution 2, stabilization 2.</p>
+      <div class="stack" id="dims"></div>
+      <p id="dimnote"></p>
+    </div>
+
+    <div class="card stack">
+      <p class="eyebrow">Second layer</p>
+      <h2>How your answers might be labelled</h2>
+      <p id="lhead"></p>
+      <div class="stack" id="lbars"></div>
+      <p class="note" id="ldiff"></p>
+      <div class="box"><h3 id="ldefT"></h3><p id="ldefB"></p></div>
+      <details>
+        <summary><b>What each label means</b></summary>
+        <div class="stack" id="ldefs" style="margin-top:12px"></div>
+      </details>
+      <p class="note">Handle with care. These labels are rough shortcuts, and people use some of them as insults. The core difference between capitalism and socialism or communism is who owns the means of production (factories, land, big firms): private owners, or society as a whole. Ten questions cannot measure that fully, and none of them asks about political freedoms such as elections, free speech or one-party rule, which also matter a lot for labels like "communist". No country fits one label purely: most real economies mix private and public ownership.</p>
+    </div>
+
+    <div class="card stack">
+      <h2>Two ways to read this position</h2>
+      <div class="two">
+        <div class="box"><h3>The case people at this position make</h3><p id="rcase"></p></div>
+        <div class="box"><h3>The question their critics ask</h3><p id="rcrit"></p></div>
+      </div>
+      <h3>Look back at in class</h3>
+      <p id="rlook"></p>
+    </div>
+
+    <div class="card stack">
+      <h2>Your answers</h2>
+      <div class="stack" id="review"></div>
+    </div>
+
+    <div class="card stack">
+      <p class="note">Bring one thing to class: the question where you hesitated most, and why. A result is a snapshot of today's views. It is not a label, and it can change as you learn the evidence.</p>
+      <div style="display:flex;gap:12px;flex-wrap:wrap">
+        <button class="primary" id="copy">Copy my result</button>
+        <button class="ghost" id="retake">Retake the test</button>
+      </div>
+      <p class="note" id="copied" role="status"></p>
+    </div>
+  </section>
+</main>
+
+<script>
+/* Each answer is worth 0 (market first) to 3 (State first). Option order is shuffled per viewer. */
+var Q = [
+ {d:"Allocation", q:"Your town needs street lighting, local roads and a public park. Who should provide them?", o:[
+  [0,"Private companies, paid by the people who use them through tolls, fees and memberships."],
+  [1,"Private firms build and run them under government contracts, and users cover part of the cost."],
+  [2,"The local government provides them, funded by taxes, with private contractors doing the work."],
+  [3,"The State plans, builds and runs them, funded entirely by taxes."]]},
+ {d:"Regulation", q:"A factory brings 200 jobs to a town but pollutes the river that fishers depend on. What should happen?", o:[
+  [0,"Leave it to the fishers and the factory to negotiate or sue. The jobs matter most."],
+  [1,"Keep rules light. Fine the factory only if damage is clearly proven."],
+  [2,"Set pollution limits and charge a tax on emissions so the factory pays for the damage it causes."],
+  [3,"Set strict limits with regular inspections, and close the factory if it cannot comply."]]},
+ {d:"Redistribution", q:"The gap between rich and poor in your country keeps growing. What is the best response?", o:[
+  [0,"Do nothing. Growth and competition will eventually lift everyone."],
+  [1,"Keep taxes where they are and give limited help only to people in extreme poverty."],
+  [2,"Use moderately progressive taxes to fund education and cash support for low-income families."],
+  [3,"Raise taxes substantially on high incomes and wealth to narrow the gap directly."]]},
+ {d:"Redistribution", q:"Health care: who should make sure everyone can get treated?", o:[
+  [0,"Individuals, through private insurance and out-of-pocket payment."],
+  [1,"A private system, with State help for the poorest only."],
+  [2,"A mix: public insurance covers the basics and people can buy private coverage on top."],
+  [3,"A public system paid by taxes and free for everyone when they need it."]]},
+ {d:"Stabilization", q:"A recession hits and unemployment rises quickly. What should the government do?", o:[
+  [0,"Nothing. Markets will adjust, and extra spending only adds debt."],
+  [1,"Cut red tape and taxes so businesses lead the recovery, and keep the budget balanced."],
+  [2,"Spend more and cut taxes for a while, accept a deficit, and pay it back in good years."],
+  [3,"Launch large public spending and public jobs programs until employment recovers."]]},
+ {d:"Regulation", q:"The only electricity company in the country is private, and it raises prices every year. What should be done?", o:[
+  [0,"Nothing. High profits will attract competitors."],
+  [1,"Remove the legal barriers that keep new companies out."],
+  [2,"Keep it private, but let a regulator cap its prices."],
+  [3,"Bring it under public ownership."]]},
+ {d:"Allocation", q:"The price of bread jumps 40%. What is the best response?", o:[
+  [0,"Let the price adjust. High prices bring more supply."],
+  [1,"Remove obstacles to imports and competition so prices fall by themselves."],
+  [2,"Give cash transfers to poor families and leave the price free."],
+  [3,"Cap the price of bread, or subsidize it for everyone."]]},
+ {d:"Stabilization", q:"In slow years, the government wants to borrow to build a metro, ports and highways. Do you agree?", o:[
+  [0,"No. Debt burdens future generations. Let private investors build what is profitable."],
+  [1,"Only for projects that pay for themselves through tolls and fares."],
+  [2,"Yes, within a clear legal limit on debt."],
+  [3,"Yes. Public investment is how the State drives growth and jobs."]]},
+ {d:"Allocation", q:"If you could change the size of the State in your country, what would you do?", o:[
+  [0,"Make it much smaller, with lower taxes and fewer services."],
+  [1,"Make it somewhat smaller."],
+  [2,"Keep it about the same size and spend more effectively."],
+  [3,"Make it larger, with higher taxes and more services."]]},
+ {d:"Regulation", q:"Should the State try to protect adults from harmful personal choices, such as sugary drinks or tobacco?", o:[
+  [0,"No. Adults decide for themselves."],
+  [1,"Only by providing information and warning labels."],
+  [2,"Yes, with taxes that make harmful products cost more."],
+  [3,"Yes, with taxes plus bans and strict limits."]]}
+];
+var BANDS = [
+ {max:6, t:"Market first",
+  s:"You trust voluntary exchange and private ownership to solve most problems, and you want the State kept small and focused on a few basics.",
+  c:"Prices carry information no planner has, competition disciplines firms, and people spend their own money better than officials do. State intervention often creates costs that nobody sees at first.",
+  k:"If a market failure is real, such as a polluted river or a natural monopoly, who fixes it, and what if the people harmed cannot pay or bargain?",
+  l:"Government failure, the limits of State action, and the case for keeping the State small."},
+ {max:12, t:"Market-leaning",
+  s:"You prefer markets and private provision by default, and you accept a limited State role where markets clearly fall short or where people face extreme need.",
+  c:"Use the State sparingly and precisely: define property rights, correct clear externalities, and help the poorest, while keeping taxes and regulation light.",
+  k:"Where is the line between a clear market failure and an ordinary market outcome, and who decides?",
+  l:"Externalities and Pigouvian taxes, plus the toolbox of fines, subsidies and transfers."},
+ {max:18, t:"Mixed economy",
+  s:"You see markets and the State as partners. You want competition where it works and public action where it does not, and you judge each case on its details.",
+  c:"Most successful economies combine private enterprise with public goods, regulation, a safety net and stabilization. The skill lies in choosing the right tool for each problem.",
+  k:"If every case is judged on its own, what principle tells you when to stop? Mixed does not mean there is no trade-off.",
+  l:"The four jobs of the State, the ownership spectrum from private to public, and the council framework: failure, tool, cost, capacity."},
+ {max:24, t:"State-leaning",
+  s:"You expect the State to play a large role in correcting markets, protecting people and sharing opportunity, and you accept higher taxes to pay for it.",
+  c:"Markets leave out public goods, equity and long-term investment. A capable State can supply them, steady the economy in downturns and keep essential services within everyone's reach.",
+  k:"What does it cost, who pays it, and can the State deliver the service well? A real failure of the market is not proof that the State will do better.",
+  l:"Government failure, the size-of-State debate, and how State spending is financed in Module 11."},
+ {max:30, t:"State first",
+  s:"You believe essential services, key industries and the distribution of income are too important to leave to markets, and you want the State to lead.",
+  c:"Where markets deliver inequality, instability or monopoly, public ownership and planning give society direct control over what matters most.",
+  k:"How does the State stay efficient, accountable and affordable without competition or price signals, and what happens when it makes a mistake?",
+  l:"Government failure, public enterprise and nationalization, and the limits of fiscal capacity."}
+];
+var LABELS = [
+ {n:"Libertarian", t:[0,0,0,0,0,0,0,0,0,0],
+  d:"Wants the smallest possible State: protecting property, contracts and safety, and little else. Private ownership and voluntary exchange almost everywhere. Often called laissez-faire capitalism."},
+ {n:"Free-market capitalist", t:[1,2,1,1,1,2,1,1,1,1],
+  d:"Believes private ownership and competition should run the economy, with the State as referee: enforcing rules, correcting clear market failures and helping the poorest. Often called classical liberal."},
+ {n:"Social-market capitalist", t:[2,2,2,2,2,2,2,2,2,2],
+  d:"Keeps private ownership and markets, but pairs them with strong regulation, a broad safety net and active stabilization. This is the mixed economy found in much of Europe and Latin America."},
+ {n:"Social democrat", t:[2,2,3,3,2,2,2,2,3,2],
+  d:"Accepts a market economy but wants a larger State with higher taxes, wide public services such as health and education, and strong reduction of inequality. Nordic countries are the usual example."},
+ {n:"Democratic socialist", t:[3,3,3,3,3,3,2,3,3,2],
+  d:"Wants society, through democratic means, to own or control key industries and services such as energy, banking and health, while keeping elections and political freedoms."},
+ {n:"Communist (central planning)", t:[3,3,3,3,3,3,3,3,3,3],
+  d:"Wants the means of production owned in common and the economy directed by a central plan rather than by markets. In practice, 20th-century communist states combined this with one-party rule."}
+];
+var DIMS = ["Allocation","Regulation","Redistribution","Stabilization"];
+var DESC = {Allocation:"who supplies goods and services", Regulation:"rules, prices and ownership", Redistribution:"who gets what", Stabilization:"booms, slumps and debt"};
+
+var order = [], ans = [], cur = 0;
+var $ = function(id){return document.getElementById(id)};
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
+function show(id){["intro","quiz","result"].forEach(function(s){$(s).hidden=s!==id});window.scrollTo(0,0)}
+
+function init(){
+  order = Q.map(function(q){return shuffle(q.o.map(function(_,i){return i}))});
+  ans = Q.map(function(){return null});
+  cur = 0;
+}
+function render(){
+  var q = Q[cur];
+  $("count").textContent = "Question "+(cur+1)+" of "+Q.length;
+  $("dimtag").textContent = q.d;
+  $("progfill").style.width = (cur/Q.length*100)+"%";
+  $("prog").setAttribute("aria-valuenow",cur);
+  $("qtext").textContent = q.q;
+  var fs = $("fs");
+  Array.prototype.slice.call(fs.querySelectorAll("label")).forEach(function(n){n.remove()});
+  order[cur].forEach(function(oi,pos){
+    var l = document.createElement("label"); l.className="opt"; l.htmlFor="o"+pos;
+    var r = document.createElement("input"); r.type="radio"; r.name="a"; r.id="o"+pos; r.value=oi;
+    if(ans[cur]===oi){r.checked=true;l.classList.add("sel")}
+    r.addEventListener("change",function(){
+      ans[cur]=oi; $("next").disabled=false;
+      Array.prototype.slice.call(fs.querySelectorAll(".opt")).forEach(function(n){n.classList.remove("sel")});
+      l.classList.add("sel");
+    });
+    var s = document.createElement("span"); s.textContent = q.o[oi][1];
+    l.appendChild(r); l.appendChild(s); fs.appendChild(l);
+  });
+  $("next").disabled = ans[cur]===null;
+  $("next").textContent = cur===Q.length-1 ? "See my result" : "Next";
+  $("back").disabled = cur===0;
+}
+function score(){
+  var total=0, d={}; DIMS.forEach(function(k){d[k]={s:0,n:0}});
+  Q.forEach(function(q,i){var v=q.o[ans[i]][0]; total+=v; d[q.d].s+=v; d[q.d].n+=3});
+  return {total:total,d:d};
+}
+function band(t){for(var i=0;i<BANDS.length;i++){if(t<=BANDS[i].max)return BANDS[i]}return BANDS[4]}
+
+function labelFit(){
+  var picks = Q.map(function(q,i){return q.o[ans[i]][0]});
+  var list = LABELS.map(function(L){
+    var dist=0, diffs=[];
+    picks.forEach(function(v,i){var x=Math.abs(v-L.t[i]); dist+=x; if(x>=2) diffs.push(i)});
+    return {L:L, fit:Math.round((1-dist/30)*100), diffs:diffs};
+  });
+  list.sort(function(a,b){return b.fit-a.fit});
+  return list;
+}
+function labels(){
+  var list = labelFit(), top = list[0];
+  var close = list[1].fit>=top.fit-4;
+  $("lhead").textContent = close
+    ? "Your answers sit closest to "+top.L.n+", and nearly as close to "+list[1].L.n+"."
+    : "Your answers sit closest to "+top.L.n+".";
+  var bars = "";
+  list.slice(0,3).forEach(function(x,i){
+    bars += '<div class="lrow'+(i===0?' top1':'')+'"><b>'+x.L.n+'</b><div class="bar" aria-hidden="true"><i style="width:'+x.fit+'%"></i></div><b>'+x.fit+'%</b></div>';
+  });
+  $("lbars").innerHTML = bars;
+  $("ldiff").textContent = top.diffs.length
+    ? "Where you differ most from "+top.L.n+": "+top.diffs.slice(0,3).map(function(i){return "question "+(i+1)+" ("+Q[i].d.toLowerCase()+")"}).join(", ")+"."
+    : "None of your answers differs sharply from "+top.L.n+".";
+  $("ldefT").textContent = top.L.n;
+  $("ldefB").textContent = top.L.d;
+  $("ldefs").innerHTML = LABELS.map(function(L){return '<p><b>'+L.n+'.</b> '+L.d+'</p>'}).join("");
+}
+function results(){
+  var r = score(), b = band(r.total), name = $("who").value.trim();
+  $("rwho").textContent = name ? name+", your result" : "Your result";
+  $("rtitle").textContent = b.t;
+  $("rsum").textContent = b.s;
+  var pct = r.total/30*100;
+  $("pin").textContent = r.total+" / 30";
+  $("pin").style.left = Math.min(Math.max(pct,8),92)+"%";
+  $("rscore").textContent = "Score "+r.total+" out of 30. 0 means you picked the market-first answer every time, 30 means the State-first answer every time.";
+  var dh = ""; var hi=null, lo=null;
+  DIMS.forEach(function(k){
+    var p = Math.round(r.d[k].s/r.d[k].n*100);
+    if(hi===null||p>hi.p) hi={k:k,p:p};
+    if(lo===null||p<lo.p) lo={k:k,p:p};
+    dh += '<div class="dim"><span><b>'+k+'</b><br><span class="note">'+DESC[k]+'</span></span><div class="bar" aria-hidden="true"><i style="width:'+p+'%"></i></div><b>'+p+'%</b></div>';
+  });
+  $("dims").innerHTML = dh;
+  $("dimnote").textContent = hi.p===lo.p
+    ? "Your views are consistent across all four jobs."
+    : "You favour the biggest State role in "+hi.k.toLowerCase()+" ("+hi.p+"%) and the smallest in "+lo.k.toLowerCase()+" ("+lo.p+"%). Ask yourself why the two differ.";
+  labels();
+  $("rcase").textContent = b.c;
+  $("rcrit").textContent = b.k;
+  $("rlook").textContent = b.l;
+  var rv = "";
+  Q.forEach(function(q,i){
+    rv += '<div><p class="note">'+(i+1)+'. '+q.d+'</p><p>'+q.o[ans[i]][1]+'</p></div>';
+  });
+  $("review").innerHTML = rv;
+  $("copied").textContent = "";
+  show("result");
+}
+function summaryText(){
+  var r = score(), b = band(r.total), name = $("who").value.trim();
+  var parts = DIMS.map(function(k){return k+" "+Math.round(r.d[k].s/r.d[k].n*100)+"%"});
+  return (name?name+": ":"")+b.t+" ("+r.total+"/30), closest label: "+labelFit()[0].L.n+". "+parts.join(", ")+".";
+}
+
+$("start").addEventListener("click",function(){init();render();show("quiz")});
+$("next").addEventListener("click",function(){
+  if(ans[cur]===null) return;
+  if(cur<Q.length-1){cur++;render();window.scrollTo(0,0)} else {results()}
+});
+$("back").addEventListener("click",function(){if(cur>0){cur--;render()}});
+$("retake").addEventListener("click",function(){init();show("intro")});
+$("copy").addEventListener("click",function(){
+  var t = summaryText();
+  try{
+    navigator.clipboard.writeText(t).then(function(){$("copied").textContent="Copied: "+t},function(){$("copied").textContent="Copy was blocked. Select this text instead: "+t});
+  }catch(e){$("copied").textContent="Copy was blocked. Select this text instead: "+t}
+});
+init();
+</script>
+</body>
+</html>
